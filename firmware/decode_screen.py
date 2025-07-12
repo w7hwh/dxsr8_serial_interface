@@ -1,7 +1,12 @@
 """
 decode_screen.py
 
- last edit: 20250712 1325 hrs by hwh
+ Decodes/Encodes the info sent from the radio to the head
+
+ original written by Josh, AJ9BM
+ see https://github.com/jbm9/dxsr8_serial
+
+ last edit: 20250712 1511 hrs by hwh
 
  edit history:
 

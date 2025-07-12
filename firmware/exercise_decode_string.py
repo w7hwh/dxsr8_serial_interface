@@ -1,7 +1,9 @@
 """
 exercise_decode_string.py
 
- last edit: 20250712 1322 hrs by hwh
+ Runs test cases through decode_screen routines.
+ 
+ last edit: 20250712 1516 hrs by hwh
 
  edit history:
     20250712 commented out last two test screens because they fail.

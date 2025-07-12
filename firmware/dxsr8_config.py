@@ -1,7 +1,9 @@
 """
 dxsr8_config.py
 
- last edit: 20250710 1920 hrs by hwh
+ This class stores the project pin settings, etc.
+ 
+ last edit: 20250712 1514 hrs by hwh
 
  edit history:
 
