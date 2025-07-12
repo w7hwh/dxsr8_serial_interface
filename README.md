@@ -10,9 +10,9 @@ Back in 2013 AJ9BM did an analysis of the communication between the DX-SR8's cha
 
 ## Planned stages are:
 
-- [ ] Firmware to continue analyzing the protocol. Essentially use the pico as a double channel usb-serial adapter with some analysis/decoding capability.
+- [ ] Firmware to continue analyzing the protocol. Essentially use the pico as a double channel usb-serial adapter with some analysis/decoding capability. This includes converting the original python2 to python3.
 
-- [ ] Design a board
+- [ ] Design a board.
 
 - [ ] Add capability to send CAT commands to control the rig.
 
