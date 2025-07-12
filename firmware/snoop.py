@@ -78,5 +78,3 @@ while True:
     led.toggle()                 # toggle led so we can see it's running
     time.sleep(0.1)
 
-ser.close()
-led.off()

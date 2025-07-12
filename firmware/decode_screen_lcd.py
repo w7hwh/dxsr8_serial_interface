@@ -1,31 +1,26 @@
 """
-decode_screen.py
+decode_screen_lcd.py
 
- last edit: 20250712 1325 hrs by hwh
+Decodes/Encodes the lcd info sent from the radio to the head
+
+ original written by Josh, AJ9BM
+ see https://github.com/jbm9/dxsr8_serial
+
+ last edit: 20250710 1641 hrs by hwh
+
 
  edit history:
 
-
- todo:
+"""
+#--------------------------------------------------------------------
+"""
 
 
 """
-
-def _get_bit(bytes, offset):
-    i = int(offset/8)
-    j = offset % 8
-
-    if (bytes[i] & (1<<j)) != 0:
-        return 1
-    return 0
-    
-
 class LCD16:
     """A 16 segment LCD display
 
-
     Layout is per Lite-On's naming convention:
-
 
      AAA BBB
     HK  M  NC
@@ -35,12 +30,9 @@ class LCD16:
     GT  S  RD
      FFF EEE
 
-
     The alphabet is shown on page 54 of the DX-SR8 manual.
     
     """
-
-
     ALPHABET = {
         " " : "",
         "_" : "FE",
@@ -141,7 +133,7 @@ class LCD16:
         # working.
         
         self.lookup = {} # mask => character
-        for c,m in self.ALPHABET.items():
+        for c,m in self.ALPHABET.iteritems():
             m_sorted = "".join(sorted(list(m)))
             if m_sorted in self.lookup:
                 raise Exception("Non-unique mask to character mapping: %s goes to both %s and %s" % (m, self.lookup[m_sorted], c))
@@ -179,16 +171,17 @@ class LCD16:
         lit_key = "".join(sorted([ c if c.isupper() else "" for c in self.lit]))
 
         if lit_key not in self.lookup:
-            print(">>> %s MISSING: %s lit_key:%s" % (str(self.__class__),  self.lit, lit_key ))
-            print(self.lookup[lit_key])
+            print(">>> %s MISSING: %s" % (str(self.__class__),  self.lit ))
             print(self.draw())
             return None
 
         return self.lookup[lit_key]
 
-    
+#--------------------------------------------------------------------
+"""
 
 
+"""
 class LCD16_a(LCD16):
 
     # This is the segment associated with each bit in the input, in
@@ -205,6 +198,11 @@ class LCD16_a(LCD16):
 
         return cls(lit)
 
+#--------------------------------------------------------------------
+"""
+
+
+"""
 class LCD16_b(LCD16_a):
     """This is the same as the other 16 segment display, just wired differently.
     """
@@ -215,50 +213,11 @@ class LCD16_c(LCD16_a):
 
 class LCD16_d(LCD16_a):
     SEGMENT_MAP = "ERMNyDPCxGUHTSKA"
+#--------------------------------------------------------------------
+"""
 
 
-class FrequencyDisplay:
-    def decode(self, b):
-        digits = [ LCD16_a.from_bytes(b, o) for o in [72, 88, 104, 120] ]
-        digits += [ LCD16_b.from_bytes(b, 208) ]
-        digits += [ LCD16_c.from_bytes(b, 192) ]
-        digits += [ LCD16_d.from_bytes(b, 176) ]    
-
-        return "".join([d.decode() for d in digits])
-
-    def is_freq(self, b):
-        disp = self.decode(b)
-
-        for c in disp:
-            if c not in list(" 0123456789"):
-                return False
-
-        inspace = True
-        for i in range(len(disp)):
-            c = disp[i]
-            
-            if c != " ":
-                inspace = False
-                
-            if not inspace and c not in "0123456789":
-                return False
-
-        if inspace:
-            return False
-            
-        return True
-
-
-    def freq(self, b):
-        if not self.is_freq(b):
-            return None
-
-        return int(self.decode(b))*10
-
-
-
-    ################################################################################
-
+"""
 class LCD16_mode_a(LCD16_a):
     SEGMENT_MAP = "AKcdeGgHiCPDmnoE"
 
@@ -268,103 +227,3 @@ class LCD16_mode_b(LCD16_a):
 class LCD16_mode_c(LCD16_a):
     SEGMENT_MAP = "KAcEqCPDiGkHSNMp"
 
-
-class ModeDisplay:
-    def decode(self, b):
-        digits = [ LCD16_mode_a.from_bytes(b, 224),
-                   LCD16_mode_b.from_bytes(b, 240),
-                   LCD16_mode_c.from_bytes(b, 32) ]
-        return "".join([d.decode() for d in digits])
-    
-
-
-    ################################################################################
-
-class RFPowerDisplay:
-    def decode(self, b):
-        # It's not clear which bit is RF-20, so we just assume it's
-        # lit.  We can't tell which one it is because it never goes
-        # off, so this seems like a safe assumption.
-
-        rf10 = _get_bit(b, 40)
-        rf0 = _get_bit(b, 244)
-        rfp10 = _get_bit(b, 228)
-
-        if rfp10 == 1:
-            return 10
-        if rf0 == 1:
-            return 0
-        if rf10 == 1:
-            return -10
-        return -20
-
-
-class AGCDisplay():
-    def decode(self, b):
-        if 1 == _get_bit(b, 36):
-            return "AGC-S"
-        if 1 == _get_bit(b, 248):
-            return "AGC-F"
-        return ""
-
-class SMeterDisplay():
-    def decode(self, b):
-        busy = _get_bit(b, 80)
-        if 0 == busy:
-            return None
-
-        maxtick = max([ i-136 if 1 == _get_bit(b, i) else 0 for i in range(136, 162) ])
-
-        if maxtick == 0:
-            return 0
-
-        if maxtick < 9*2:
-            return 1 + float(maxtick-1)/2
-
-        step = 1.259921 # 2^(1/3)
-        db = 10
-
-        for i in range(18, maxtick):
-            db *= step
-
-        return db
-
-    def decode_string(self, b):
-        g = self.decode(b)
-        if None == g:
-            return "squelch"
-        return "%.2f" % g
-
-
-    ################################################################################
-
-
-class BacklightDisplay:
-    def decode(self, b):
-        return b[32] # hurray, a trivial one!
-
-
-    ################################################################################
-
-
-class MiscDisplay:
-    def decode(self, b):
-        retval = []
-
-        sets = {
-            "FUNC": 76,
-            "KEY": 92,
-            "STAR": 232,
-            "NB": 212,
-            #            "Nar": 200, # XXX TODO Narrow is lost!
-            "T": 184,
-            "TUNE": 52,
-            "SPLIT": 54, 
-            }
-
-
-        for name,i in sets.iteritems():
-            if 1 == _get_bit(b, i):
-                retval.append(name)
-        
-        return retval
