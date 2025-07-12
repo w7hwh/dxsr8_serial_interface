@@ -1,7 +1,7 @@
 
 
 def _get_bit(bytes, offset):
-    i = int(offset)/8
+    i = int(offset/8)
     j = offset % 8
 
     if (bytes[i] & (1<<j)) != 0:
@@ -130,7 +130,8 @@ class LCD16:
         # working.
         
         self.lookup = {} # mask => character
-        for c,m in self.ALPHABET.iteritems():
+        #for c,m in self.ALPHABET.iteritems():
+        for c,m in self.ALPHABET.items():
             m_sorted = "".join(sorted(list(m)))
             if m_sorted in self.lookup:
                 raise Exception("Non-unique mask to character mapping: %s goes to both %s and %s" % (m, self.lookup[m_sorted], c))
@@ -357,6 +358,3 @@ class MiscDisplay:
                 retval.append(name)
         
         return retval
-
-    
-

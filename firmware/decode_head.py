@@ -1,3 +1,17 @@
+"""
+decode_head.py
+
+ Decodes/Encodes the info sent from the head to the radio
+
+ original written by Josh, AJ9BM
+ see https://github.com/jbm9/dxsr8_serial
+
+ last edit: 20250709 1731 hrs by hwh
+
+
+ edit history:
+
+"""
 class decode_head:
     
     def _get_bit(bytes, offset):
