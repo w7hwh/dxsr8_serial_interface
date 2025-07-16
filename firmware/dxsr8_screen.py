@@ -1,5 +1,5 @@
 """
-decode_screen.py
+dxsr8_screen.py
 
  Decodes/Encodes the info sent from the radio to the head
 

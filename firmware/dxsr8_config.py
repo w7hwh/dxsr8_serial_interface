@@ -3,7 +3,7 @@ dxsr8_config.py
 
  This class stores the project pin settings, etc.
  
- last edit: 20250712 1514 hrs by hwh
+ last edit: 202507152 1357 hrs by hwh
 
  edit history:
 
@@ -21,7 +21,7 @@ class dxsr8_config():
     baud_rate=38400
     bits=8
     parity=None
-    stop=2
+    stop=1
     
     # Pin numbers for head to radio
     head_rx_pin=Pin(5)
@@ -34,4 +34,7 @@ class dxsr8_config():
     # Pin numbers for display
     display_scl_pin=Pin(17)
     display_sda_pin=Pin(16)
+
+    # Pin number for relay
+    relay_pin=Pin(22)
 

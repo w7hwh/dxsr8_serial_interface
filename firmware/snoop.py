@@ -1,17 +1,23 @@
 """
 snoop.py
 
- last edit: 20250710 2002 hrs by hwh
+ last edit: 20250715 2045 hrs by hwh
 
  edit history:
 
 
  todo:
-    add other head decodes
     add radio decodes
 
 """
-VERSION="v0.1"
+VERSION="v0.2"
+
+MONITOR     = 0        # 0=head, 1=radio, 2=both
+SHOW_LINE   = False
+DECODE_SWDS = True
+DECODE_SWDR = False
+DECODE_SWDA = False
+DECODE_SWDV = False
 
 import select
 import sys
@@ -19,9 +25,9 @@ import time
 from machine import Pin, UART, I2C
 import sh1106
 
-from dxsr8_config import *
-import decode_head
-import decode_screen
+from dxsr8_config import dxsr8_config
+from dxsr8_head import decode_head
+import dxsr8_screen
 
 dxsr8_config=dxsr8_config()
 
@@ -46,7 +52,7 @@ display.rotate(True)
 def display_line(x):
     return x * 8
 
-dh = decode_head
+#dh = decode_head
 
 print("DXSR8 Snoop", VERSION)
 print("head2radio only")
@@ -59,22 +65,48 @@ display.show()
 
 curline = ""
 
+if MONITOR == 2:
+    TAGHEAD  ="head:%s"
+    TAGRADIO ="rad :%s"
+else:
+    TAGHEAD  ="%s"
+    TAGRADIO ="%s"
+
 while True:
-    if head_poll_obj.poll(0):
-        x = head_uart.readline()
-        print("head:", x)
+    if (MONITOR==0 or MONITOR==2):
+        if head_poll_obj.poll(0):
+            x = head_uart.readline()
+            
+            if SHOW_LINE:
+                print(TAGHEAD % x)
 
-        if x.startswith("SWDS"):
-            print("KEYS DOWN: " + str(dh.decode_SWDS(x)))
+            if DECODE_SWDS:
+                if x.startswith("SWDS"):
+                    print("KEYS DOWN: " + str(decode_head.decode_SWDS(x)))
 
-        head_uart.write(x)      # pass it on to the radio
+            if DECODE_SWDR:
+                if x.startswith("SWDR"):
+                    print("SWDR: " + str(decode_head.decode_SWDR(x)))
 
-    if radio_poll_obj.poll(0):
-        x = radio_uart.readline()
-        print("radio:", x)
+            if DECODE_SWDA:
+                if x.startswith("SWDA"):
+                    print("SWDA: " + str(decode_head.decode_SWDA(x)))
 
-        radio_uart.write(x)      # pass it on to the head
+            if DECODE_SWDV:
+                if x.startswith("SWDV"):
+                    print("SWDV: " + str(decode_head.decode_SWDV(x)))
+
+            head_uart.write(x)      # pass it on to the radio
+
+    if MONITOR==1 or MONITOR==2:
+        if radio_poll_obj.poll(0):
+            x = radio_uart.readline()
+            print(TAGRADIO % x)
+
+            #if DECODE:
+            # TODO: add decodes here
+            
+            radio_uart.write(x)      # pass it on to the head
         
     led.toggle()                 # toggle led so we can see it's running
     time.sleep(0.1)
-
