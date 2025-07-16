@@ -24,7 +24,7 @@
 - GP19  
 - GP20  
 - GP21  
-- GP22  
+- GP22  GP22-RELAY-CTL
 - GP23  (wireless module) OP wireless power on signal
 - GP24  (wireless module) OP/IP SPI data/IRQ
 - GP25  (wireless module) OP SPI CS, when high also enable GP29 to read VSYS
@@ -32,6 +32,6 @@
 - GP27  ADC1 monitor power from USB
 - GP28  
 - GP29  (wireless module) OP/IP SPI CLK/ADC3 mode read VSYS/3
-- WL_GPOI0  (wireless module) OP to LED
-- WL_GPOI1  (wireless module) OP controls SMPS power save
-- WL_GPOI2  (wireless module) IP high if VBUS present
+- WL-GPOI0  (wireless module) OP to LED
+- WL-GPOI1  (wireless module) OP controls SMPS power save
+- WL-GPOI2  (wireless module) IP high if VBUS present
