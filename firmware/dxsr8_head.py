@@ -2,7 +2,7 @@
 dxsr8_head.py
 
  Decodes/Encodes the info sent from the head to the radio
-
+    
     SWDV  decodes rit, ifshift, squelch, and volume
     SWDR  decodes the direction of rotation of the frequency dial
     SWDA  related to the frequency dial?

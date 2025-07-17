@@ -3,7 +3,7 @@ dxsr8_config.py
 
  This class stores the project pin settings, etc.
  
- last edit: 202507152 1357 hrs by hwh
+ last edit: 20250715 1000 hrs by hwh
 
  edit history:
 
@@ -22,6 +22,7 @@ class dxsr8_config():
     bits=8
     parity=None
     stop=1
+    rxbuf=512
     
     # Pin numbers for head to radio
     head_rx_pin=Pin(5)
