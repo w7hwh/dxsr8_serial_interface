@@ -4,7 +4,7 @@ radio_snoopy.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250710 2351 hrs by hwh
+ last edit: 20250718 1419 hrs by hwh
 
 
  edit history:
@@ -14,7 +14,7 @@ radio_snoopy.py
  unit.
 
 """
-VERSION="v0.1"
+VERSION="v0.2"
 
 import select
 import time
@@ -68,39 +68,38 @@ def intWithCommas(x):
 
 
 def print_state(sin):
-    print("print_state() type(sin)=", type(sin))
     
     if not sin.startswith("LCSA"):
         return
     
     #s = [ ord(c) for c in sin ]
-
-    for s in sin:
-        print("print_state type(s)=", type(s))
-        
-        #try:
+    s = sin
+    
+    try:
         mode = mdisp.decode(s)
-        '''
-            rxstate = "%s RF:%+2d %s" % (agcdisp.decode(s), rfdisp.decode(s), smeterdisp.decode_string(s))
+        
+        rxstate = "%s RF:%+2d %s" % (agcdisp.decode(s), rfdisp.decode(s), smeterdisp.decode_string(s))
+        
+        line = ""
 
-            line = "" # "%2d>" % backlightdisp.decode(s) # if you care about the backlight intensity.
+        if fdisp.is_freq(s):
+            line += "[%s] f = %s %s" % (mode, intWithCommas(fdisp.freq(s)), rxstate)
+        else:
+            line += "[%s] > %s < %s" % (mode, fdisp.decode(s), rxstate)
 
-            if fdisp.is_freq(s):
-                line += "[%s] f = %s %s" % (mode, intWithCommas(fdisp.freq(s)), rxstate)
-            else:
-                line += "[%s] > %s < %s" % (mode, fdisp.decode(s), rxstate)
+        line += str(sorted(miscdisp.decode(s)))
 
-            line += str(sorted(miscdisp.decode(s)))
+        line += " <BL%2d>" % backlightdisp.decode(s) # if you care about the backlight intensity.
 
-            print(line)
-           
-        except (Exception) as e:
-            print()
-            print("Caught exception: " + str(e))
-            print()
-            print("Input %s" % (s))
-            print()
-        '''
+        print(line)
+        
+    except (Exception) as e:
+        print()
+        print("Caught exception: " + str(e))
+        print()
+        print("Input %s" % (sin))
+        print()
+    
 
 print("Radio Snoopy", VERSION)
 print("radio2head only")
@@ -119,12 +118,8 @@ while True:
     
     if radio_poll_obj.poll(0):
         x = radio_uart.read()
-        print("curline before += ", type(curline))
         curline += x
-        print("curline after += ", type(curline))
-         
-        print("curline=", curline)
-        
+                 
         if -1 != curline.find(b"AL~READY"):
             print("GOT AL~READY.")
             n = curline.find(b"AL~READY")
@@ -134,14 +129,13 @@ while True:
             print("SEEK to LCSA: %d" % curline.find(b"LCSA"))
             print()
             n = curline.find(b"LCSA")
+            # send the part before LCSA on to the head
             radio_uart.write(curline[0:n])
+            # remove that part from the buffer
             curline = curline[n:]
         
         while len(curline) >= 34:
-            print("curline before print_state ", type(curline))
-            #print("line: " + "".join([ "%02x" % ord(c) for c in curline ]))
             print_state(curline[0:34])
-            print("curline after print_state ", type(curline))
             radio_uart.write(curline[0:34])
             curline = curline[34:]
         

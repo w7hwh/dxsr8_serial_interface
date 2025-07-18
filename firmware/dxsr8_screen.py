@@ -6,7 +6,7 @@ dxsr8_screen.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250712 1511 hrs by hwh
+ last edit: 20250718 1423 hrs by hwh
 
  edit history:
 
@@ -204,7 +204,6 @@ class LCD16_a(LCD16):
     
     @classmethod
     def from_bytes(cls, bytes, offset):
-        print("from_bytes() bytes = ", type(bytes))
         lit = ""
         for k in range(16):
             if 1 == _get_bit(bytes, offset+k):
@@ -278,7 +277,6 @@ class LCD16_mode_c(LCD16_a):
 
 class ModeDisplay:
     def decode(self, b):
-        print("ModeDisplay() decode b = ", type(b))
         digits = [ LCD16_mode_a.from_bytes(b, 224),
                    LCD16_mode_b.from_bytes(b, 240),
                    LCD16_mode_c.from_bytes(b, 32) ]
@@ -371,7 +369,7 @@ class MiscDisplay:
             }
 
 
-        for name,i in sets.iteritems():
+        for name,i in sets.items():
             if 1 == _get_bit(b, i):
                 retval.append(name)
         
