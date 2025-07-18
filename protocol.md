@@ -18,7 +18,21 @@ Most of the protocol was figured out by [AJ9BM](./aj9bm.md) back in 2013. He did
 
 ---
 
+## Packets sent at powerup
+
+b'AL~READY\r\n'
+b'SWDA0000000081718AA1800100\r\n'
+b'SWDV81728AA10100\r\n'
+
+---
+
 ## Packets sent head to chassis
+
+### AL~READY
+
+This appears to be the head telling the chassis that it's ready. The only time I've seen it is at powerup.
+
+b'AL~READY\r\n'
 
 ### SWDV
 
