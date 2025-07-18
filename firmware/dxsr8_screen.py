@@ -17,6 +17,7 @@ dxsr8_screen.py
 """
 
 def _get_bit(bytes, offset):
+    
     i = int(offset/8)
     j = offset % 8
 
@@ -203,6 +204,7 @@ class LCD16_a(LCD16):
     
     @classmethod
     def from_bytes(cls, bytes, offset):
+        print("from_bytes() bytes = ", type(bytes))
         lit = ""
         for k in range(16):
             if 1 == _get_bit(bytes, offset+k):
@@ -276,6 +278,7 @@ class LCD16_mode_c(LCD16_a):
 
 class ModeDisplay:
     def decode(self, b):
+        print("ModeDisplay() decode b = ", type(b))
         digits = [ LCD16_mode_a.from_bytes(b, 224),
                    LCD16_mode_b.from_bytes(b, 240),
                    LCD16_mode_c.from_bytes(b, 32) ]

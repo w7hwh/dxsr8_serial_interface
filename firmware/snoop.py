@@ -65,7 +65,6 @@ def display_line(x):
 print(head_uart)
 
 print("DXSR8 Snoop", VERSION)
-print("head2radio only")
 
 display.fill(0)
 display.text("DXSR8 Snoop", 0, display_line(0))
@@ -84,8 +83,8 @@ display.show()
 curline = ""
 
 if MONITOR == 2:
-    TAGHEAD  ="head:%s"
-    TAGRADIO ="rad :%s"
+    TAGHEAD  ="head  : %s"
+    TAGRADIO ="radio : %s"
 else:
     TAGHEAD  ="%s"
     TAGRADIO ="%s"
@@ -102,7 +101,7 @@ while True:
 
             if SHOW_HEAD_READY:
                 if x.startswith("AL~READY"):
-                    print("AL~READY")
+                    print("got AL~READY")
 
             if DECODE_HEAD_SWDS:
                 if x.startswith("SWDS"):
@@ -131,7 +130,7 @@ while True:
 
             if SHOW_RADIO_READY:
                 if x.startswith("AL~READY"):
-                    print("AL~READY")
+                    print("got AL~READY")
 
             if SHOW_RADIO_LCSA:
                 if x.startswith("LCSA"):
@@ -141,4 +140,4 @@ while True:
             radio_uart.write(x)      # pass it on to the head
         
     led.toggle()                 # toggle led so we can see it's running
-    time.sleep(0.1)
+    time.sleep(0.2)

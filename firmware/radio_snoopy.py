@@ -19,7 +19,7 @@ VERSION="v0.1"
 import select
 import time
 from machine import Pin, UART, I2C
-from decode_screen import *
+from dxsr8_screen import *
 from dxsr8_config import *
 import sh1106
 
@@ -68,33 +68,39 @@ def intWithCommas(x):
 
 
 def print_state(sin):
+    print("print_state() type(sin)=", type(sin))
+    
     if not sin.startswith("LCSA"):
         return
     
-    s = [ ord(c) for c in sin ]
-    try:
-        mode = mdisp.decode(s)
+    #s = [ ord(c) for c in sin ]
 
-        rxstate = "%s RF:%+2d %s" % (agcdisp.decode(s), rfdisp.decode(s), smeterdisp.decode_string(s))
-
-        line = "" # "%2d>" % backlightdisp.decode(s) # if you care about the backlight intensity.
-
-        if fdisp.is_freq(s):
-            line += "[%s] f = %s %s" % (mode, intWithCommas(fdisp.freq(s)), rxstate)
-        else:
-            line += "[%s] > %s < %s" % (mode, fdisp.decode(s), rxstate)
-
-        line += str(sorted(miscdisp.decode(s)))
-
-        print(line)
+    for s in sin:
+        print("print_state type(s)=", type(s))
         
-    except (Exception) as e:
-        print()
-        print("Caught exception: " + str(e))
-        print()
-        print("Input %s" % (s))
-        print()
+        #try:
+        mode = mdisp.decode(s)
+        '''
+            rxstate = "%s RF:%+2d %s" % (agcdisp.decode(s), rfdisp.decode(s), smeterdisp.decode_string(s))
 
+            line = "" # "%2d>" % backlightdisp.decode(s) # if you care about the backlight intensity.
+
+            if fdisp.is_freq(s):
+                line += "[%s] f = %s %s" % (mode, intWithCommas(fdisp.freq(s)), rxstate)
+            else:
+                line += "[%s] > %s < %s" % (mode, fdisp.decode(s), rxstate)
+
+            line += str(sorted(miscdisp.decode(s)))
+
+            print(line)
+           
+        except (Exception) as e:
+            print()
+            print("Caught exception: " + str(e))
+            print()
+            print("Input %s" % (s))
+            print()
+        '''
 
 print("Radio Snoopy", VERSION)
 print("radio2head only")
@@ -105,32 +111,37 @@ display.text("radio2head only", 0, display_line(3))
 display.text(VERSION, 0, display_line(7))
 display.show()
 
-curline = ""
+curline = b""
 
 while True:
     led.toggle()
     time.sleep(0.1)
     
     if radio_poll_obj.poll(0):
-        x = radio_uart.read(1)
+        x = radio_uart.read()
+        print("curline before += ", type(curline))
+        curline += x
+        print("curline after += ", type(curline))
+         
+        print("curline=", curline)
         
-        curline += x[0]
-        
-        if -1 != curline.find("AL~READY"):
+        if -1 != curline.find(b"AL~READY"):
             print("GOT AL~READY.")
-            n = curline.find("AL~READY")
+            n = curline.find(b"AL~READY")
             curline = curline[n+8+1:]
         
-        if 1 <= curline.find("LCSA"):
-            print("SEEK to LCSA: %d" % curline.find("LCSA"))
+        if 1 <= curline.find(b"LCSA"):
+            print("SEEK to LCSA: %d" % curline.find(b"LCSA"))
             print()
-            n = curline.find("LCSA")
+            n = curline.find(b"LCSA")
             radio_uart.write(curline[0:n])
             curline = curline[n:]
         
         while len(curline) >= 34:
+            print("curline before print_state ", type(curline))
             #print("line: " + "".join([ "%02x" % ord(c) for c in curline ]))
             print_state(curline[0:34])
+            print("curline after print_state ", type(curline))
             radio_uart.write(curline[0:34])
             curline = curline[34:]
         
