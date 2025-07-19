@@ -22,6 +22,7 @@ from machine import Pin, UART, I2C
 from dxsr8_screen import *
 from dxsr8_config import *
 import sh1106
+from utility import *
 
 dxsr8_config=dxsr8_config()
 
@@ -53,32 +54,6 @@ agcdisp       = AGCDisplay()
 smeterdisp    = SMeterDisplay()
 backlightdisp = BacklightDisplay()
 miscdisp      = MiscDisplay()
-
-
-def hexBytes(b):
-    return ''.join(['{:02x} '.format(i) for i in b])
-    
-def hexBytes2(b):
-    ret = ''
-    for i in b:
-        if i > 31 and i < 127:
-            ret += chr(i) + ' '
-        else:
-            ret += '{:02x} '.format(i)
-    return ret
-    
-    
-def intWithCommas(x):
-    #if type(x) not in [type(0), type(0L)]:
-    if type(x) is not int:
-        raise TypeError("Parameter must be an integer.")
-    if x < 0:
-        return '-' + intWithCommas(-x)
-    result = ''
-    while x >= 1000:
-        x, r = divmod(x, 1000)
-        result = ",%03d%s" % (r, result)
-    return "%d%s" % (x, result)
 
 
 def print_state(sin):

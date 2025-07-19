@@ -15,25 +15,13 @@ dxsr8_head.py
 
 
  edit history:
+ 
+ TODO: implement SWDA
 
 """
+from utility import *
+
 class decode_head:
-    
-    def _get_bit(bytes, offset):
-        i = int(offset)//8
-        j = offset % 8
-
-        if (bytes[i] & (1<<j)) != 0:
-            return 1
-        return 0
-
-    def _set_bit(bytes, offset):
-        i = int(offset)/8
-        j = offset % 8
-
-        bytes[i] |= (1<<j);
-        return bytes
-
     """
         -------------------------------
 

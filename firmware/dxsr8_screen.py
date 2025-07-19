@@ -15,15 +15,7 @@ dxsr8_screen.py
 
 
 """
-
-def _get_bit(bytes, offset):
-    
-    i = int(offset/8)
-    j = offset % 8
-
-    if (bytes[i] & (1<<j)) != 0:
-        return 1
-    return 0
+from utility import *
     
 
 class LCD16:
@@ -206,7 +198,7 @@ class LCD16_a(LCD16):
     def from_bytes(cls, bytes, offset):
         lit = ""
         for k in range(16):
-            if 1 == _get_bit(bytes, offset+k):
+            if 1 == get_bit(bytes, offset+k):
                 lit += cls.SEGMENT_MAP[k]
 
         return cls(lit)
@@ -292,9 +284,9 @@ class RFPowerDisplay:
         # lit.  We can't tell which one it is because it never goes
         # off, so this seems like a safe assumption.
 
-        rf10 = _get_bit(b, 40)
-        rf0 = _get_bit(b, 244)
-        rfp10 = _get_bit(b, 228)
+        rf10 = get_bit(b, 40)
+        rf0 = get_bit(b, 244)
+        rfp10 = get_bit(b, 228)
 
         if rfp10 == 1:
             return 10
@@ -307,19 +299,19 @@ class RFPowerDisplay:
 
 class AGCDisplay():
     def decode(self, b):
-        if 1 == _get_bit(b, 36):
+        if 1 == get_bit(b, 36):
             return "AGC-S"
-        if 1 == _get_bit(b, 248):
+        if 1 == get_bit(b, 248):
             return "AGC-F"
         return ""
 
 class SMeterDisplay():
     def decode(self, b):
-        busy = _get_bit(b, 80)
+        busy = get_bit(b, 80)
         if 0 == busy:
             return None
 
-        maxtick = max([ i-136 if 1 == _get_bit(b, i) else 0 for i in range(136, 162) ])
+        maxtick = max([ i-136 if 1 == get_bit(b, i) else 0 for i in range(136, 162) ])
 
         if maxtick == 0:
             return 0
@@ -370,7 +362,7 @@ class MiscDisplay:
 
 
         for name,i in sets.items():
-            if 1 == _get_bit(b, i):
+            if 1 == get_bit(b, i):
                 retval.append(name)
         
         return retval
