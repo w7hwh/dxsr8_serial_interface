@@ -4,7 +4,7 @@ radio_snoopy.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250718 1419 hrs by hwh
+ last edit: 20250718 2040 hrs by hwh
 
 
  edit history:
@@ -14,7 +14,7 @@ radio_snoopy.py
  unit.
 
 """
-VERSION="v0.2"
+VERSION="v0.3"
 
 import select
 import time
@@ -46,14 +46,28 @@ display.rotate(True)
 def display_line(x):
     return x * 8
 
-fdisp = FrequencyDisplay()
-mdisp = ModeDisplay()
-rfdisp = RFPowerDisplay()
-agcdisp = AGCDisplay()
-smeterdisp = SMeterDisplay()
+fdisp         = FrequencyDisplay()
+mdisp         = ModeDisplay()
+rfdisp        = RFPowerDisplay()
+agcdisp       = AGCDisplay()
+smeterdisp    = SMeterDisplay()
 backlightdisp = BacklightDisplay()
-miscdisp = MiscDisplay()
+miscdisp      = MiscDisplay()
 
+
+def hexBytes(b):
+    return ''.join(['{:02x} '.format(i) for i in b])
+    
+def hexBytes2(b):
+    ret = ''
+    for i in b:
+        if i > 31 and i < 127:
+            ret += chr(i) + ' '
+        else:
+            ret += '{:02x} '.format(i)
+    return ret
+    
+    
 def intWithCommas(x):
     #if type(x) not in [type(0), type(0L)]:
     if type(x) is not int:
@@ -68,28 +82,26 @@ def intWithCommas(x):
 
 
 def print_state(sin):
-    
+    print("print_state(%s)" % hexBytes2(sin))
+   
     if not sin.startswith("LCSA"):
         return
-    
-    #s = [ ord(c) for c in sin ]
-    s = sin
-    
-    try:
-        mode = mdisp.decode(s)
         
-        rxstate = "%s RF:%+2d %s" % (agcdisp.decode(s), rfdisp.decode(s), smeterdisp.decode_string(s))
+    try:
+        mode = mdisp.decode(sin)
+        
+        rxstate = "%s RF:%+2d %s" % (agcdisp.decode(sin), rfdisp.decode(sin), smeterdisp.decode_string(sin))
         
         line = ""
 
-        if fdisp.is_freq(s):
-            line += "[%s] f = %s %s" % (mode, intWithCommas(fdisp.freq(s)), rxstate)
+        if fdisp.is_freq(sin):
+            line += "[%s] f = %s %s" % (mode, intWithCommas(fdisp.freq(sin)), rxstate)
         else:
-            line += "[%s] > %s < %s" % (mode, fdisp.decode(s), rxstate)
+            line += "[%s] > %s < %s" % (mode, fdisp.decode(sin), rxstate)
 
-        line += str(sorted(miscdisp.decode(s)))
+        line += str(sorted(miscdisp.decode(sin)))
 
-        line += " <BL%2d>" % backlightdisp.decode(s) # if you care about the backlight intensity.
+        line += " <BL%2d>" % backlightdisp.decode(sin) # if you care about the backlight intensity.
 
         print(line)
         
@@ -98,6 +110,7 @@ def print_state(sin):
         print("Caught exception: " + str(e))
         print()
         print("Input %s" % (sin))
+        print("Input %s" % hexBytes2(sin))
         print()
     
 

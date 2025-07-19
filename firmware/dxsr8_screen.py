@@ -6,7 +6,7 @@ dxsr8_screen.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250718 1423 hrs by hwh
+ last edit: 20250718 2040 hrs by hwh
 
  edit history:
 
