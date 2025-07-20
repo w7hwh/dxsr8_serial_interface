@@ -21,7 +21,9 @@ Most of the protocol was figured out by [AJ9BM](./aj9bm.md) back in 2013. He did
 ## Packets sent at powerup
 
 b'AL~READY\r\n'
+
 b'SWDA0000000081718AA1800100\r\n'
+
 b'SWDV81728AA10100\r\n'
 
 ---
@@ -57,4 +59,18 @@ Contains the switches on the front panel excluding the power switch.
 ## Packets sent chassis to head
 
 Coming soon.
+
+---
+
+## Images of Display, Keys, and Head Schematic
+
+Click for larger version.
+
+[![Display](./images/display_small.png "Display")](./images/display.png "Display")
+
+[![Front Panel](./images/front_panel_small.png "Front Panel")](./images/front_panel.png "Front Panel")
+
+[![Keypad](./images/keypad_small.png "Keypad")](./images/keypad_small.png "Keypad")
+
+[![Front Panel Schematic](./images/front_panel_schematic_small.png "Front Panel Schematic")](./images/front_panel_schematic.png "Front Panel Schematic")
 
