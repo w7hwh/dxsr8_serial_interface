@@ -6,13 +6,23 @@ dxsr8_screen.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250718 2040 hrs by hwh
+ last edit: 20250720 1555 hrs by hwh
 
  edit history:
 
 
- todo:
-
+ TODO:
+     TX LED
+     RX LED
+     Narrow
+     RF Power -20
+     TXIT
+     RIT
+     TXIT/RIT value
+     Output power (low, s-low)
+     MEMO
+     MEMO Value
+     Vfo A/B
 
 """
 from utility import *
@@ -21,9 +31,7 @@ from utility import *
 class LCD16:
     """A 16 segment LCD display
 
-
     Layout is per Lite-On's naming convention:
-
 
      AAA BBB
     HK  M  NC
@@ -33,12 +41,9 @@ class LCD16:
     GT  S  RD
      FFF EEE
 
-
     The alphabet is shown on page 54 of the DX-SR8 manual.
     
     """
-
-
     ALPHABET = {
         " " : "",
         "_" : "FE",
@@ -115,9 +120,7 @@ class LCD16:
 
     def fixup(self, l):
         """Fudges segments the same way the radio seems to.
-
         A and B are hardwired together, as are E and F"""
-
 
         fudges = [ ('A', 'B'),
                    ('E', 'F') ]
@@ -137,7 +140,6 @@ class LCD16:
         # every runtime, since I have no proper tests, this makes me
         # feel much better about the delusion that everything is
         # working.
-        
         self.lookup = {} # mask => character
         for c,m in self.ALPHABET.items():
             m_sorted = "".join(sorted(list(m)))
@@ -184,14 +186,12 @@ class LCD16:
 
         return self.lookup[lit_key]
 
-    
-
+#------------------------------------------------------    
 
 class LCD16_a(LCD16):
 
     # This is the segment associated with each bit in the input, in
     # ascending bit order.
-    
     SEGMENT_MAP = "TSKAyGUHxDPCERMN"
     
     @classmethod
@@ -204,8 +204,7 @@ class LCD16_a(LCD16):
         return cls(lit)
 
 class LCD16_b(LCD16_a):
-    """This is the same as the other 16 segment display, just wired differently.
-    """
+    #This is the same as the other 16 segment display, just wired differently.
     SEGMENT_MAP = "ERMNyDPCaGUHTSKA"
 
 class LCD16_c(LCD16_a):
@@ -213,7 +212,6 @@ class LCD16_c(LCD16_a):
 
 class LCD16_d(LCD16_a):
     SEGMENT_MAP = "ERMNyDPCxGUHTSKA"
-
 
 class FrequencyDisplay:
     def decode(self, b):
@@ -253,9 +251,7 @@ class FrequencyDisplay:
 
         return int(self.decode(b))*10
 
-
-
-    ################################################################################
+#------------------------------------------------------    
 
 class LCD16_mode_a(LCD16_a):
     SEGMENT_MAP = "AKcdeGgHiCPDmnoE"
@@ -274,9 +270,7 @@ class ModeDisplay:
                    LCD16_mode_c.from_bytes(b, 32) ]
         return "".join([d.decode() for d in digits])
     
-
-
-    ################################################################################
+#------------------------------------------------------    
 
 class RFPowerDisplay:
     def decode(self, b):
@@ -296,6 +290,7 @@ class RFPowerDisplay:
             return -10
         return -20
 
+#------------------------------------------------------    
 
 class AGCDisplay():
     def decode(self, b):
@@ -304,6 +299,8 @@ class AGCDisplay():
         if 1 == get_bit(b, 248):
             return "AGC-F"
         return ""
+
+#------------------------------------------------------    
 
 class SMeterDisplay():
     def decode(self, b):
@@ -333,17 +330,16 @@ class SMeterDisplay():
             return "squelch"
         return "%.2f" % g
 
-
-    ################################################################################
-
-
+#------------------------------------------------------    
+'''
+    The display's backlight has only 64 values
+    because of the hardware.
+'''
 class BacklightDisplay:
     def decode(self, b):
-        return b[32] # hurray, a trivial one!
+        return b[32]       # hurray, a trivial one!
 
-
-    ################################################################################
-
+#------------------------------------------------------    
 
 class MiscDisplay:
     def decode(self, b):
@@ -354,7 +350,7 @@ class MiscDisplay:
             "KEY": 92,
             "STAR": 232,
             "NB": 212,
-            #            "Nar": 200, # XXX TODO Narrow is lost!
+            # "Nar": 200, # XXX TODO Narrow is lost!
             "T": 184,
             "TUNE": 52,
             "SPLIT": 54, 

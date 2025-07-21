@@ -4,7 +4,7 @@ radio_snoopy.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250718 2040 hrs by hwh
+ last edit: 20250720 2035 hrs by hwh
 
 
  edit history:
@@ -15,6 +15,15 @@ radio_snoopy.py
 
 """
 VERSION="v0.3"
+
+SHOW_LINE        = True
+USE_HEXBYTES     = True
+
+SHOW_RADIO_READY = False
+SHOW_RADIO_LCSA  = False
+SHOW_RADIO_STATE = False
+
+LCSA_LENGTH      = 34
 
 import select
 import time
@@ -87,7 +96,17 @@ def print_state(sin):
         print("Input %s" % (sin))
         print("Input %s" % hexBytes2(sin))
         print()
-    
+
+def print_bit_header():
+    print('-'*((LCSA_LENGTH*3)-1))
+    for i in range(LCSA_LENGTH):
+        print("%2d" % ((i*8)//100), end = ' ')
+    print()
+    for i in range(LCSA_LENGTH):
+        print("%02d" % ((i*8)%100), end = ' ')
+    print()
+    print('-'*((LCSA_LENGTH*3)-1))
+
 
 print("Radio Snoopy", VERSION)
 print("radio2head only")
@@ -98,32 +117,45 @@ display.text("radio2head only", 0, display_line(3))
 display.text(VERSION, 0, display_line(7))
 display.show()
 
+
 curline = b""
 
+if SHOW_LINE:
+    print_bit_header()
+    
 while True:
     led.toggle()
-    time.sleep(0.1)
     
     if radio_poll_obj.poll(0):
         x = radio_uart.read()
         curline += x
-                 
+        
+        if SHOW_LINE:
+            if USE_HEXBYTES:
+                print(hexBytes(x))
+            else:
+                print(x)
+
+        
         if -1 != curline.find(b"AL~READY"):
-            print("GOT AL~READY.")
+            if SHOW_RADIO_READY:
+                print("GOT AL~READY.")
             n = curline.find(b"AL~READY")
             curline = curline[n+8+1:]
         
         if 1 <= curline.find(b"LCSA"):
-            print("SEEK to LCSA: %d" % curline.find(b"LCSA"))
-            print()
+            if SHOW_RADIO_LCSA:
+                print("SEEK to LCSA: %d" % curline.find(b"LCSA"))
+                print()
             n = curline.find(b"LCSA")
             # send the part before LCSA on to the head
             radio_uart.write(curline[0:n])
             # remove that part from the buffer
             curline = curline[n:]
         
-        while len(curline) >= 34:
-            print_state(curline[0:34])
-            radio_uart.write(curline[0:34])
-            curline = curline[34:]
+        while len(curline) >= LCSA_LENGTH:
+            if SHOW_RADIO_STATE:
+                print_state(curline[0:LCSA_LENGTH])
+            radio_uart.write(curline[0:LCSA_LENGTH])
+            curline = curline[LCSA_LENGTH:]
         

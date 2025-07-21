@@ -14,7 +14,7 @@ exercise_decode_string.py
     FIX the last two tests?
 
 """
-from decode_screen import *
+from dxsr8_screen import *
 
 
 def intWithCommas(x):
