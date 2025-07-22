@@ -1,10 +1,5 @@
 """
-dxsr8_screen.py
-
- Decodes/Encodes the info sent from the radio to the head
-
- original written by Josh, AJ9BM
- see https://github.com/jbm9/dxsr8_serial
+bit_documentation.py
 
  last edit: 20250719 2239 hrs by hwh
 
@@ -79,6 +74,7 @@ sets = {
     "MISC_SPLIT":    54,   # single bit
     }
 
-print()
-for name, i in sets.items():
-    print("%-14s= %3d" % (name, i))
+if __name__ == '__main__':
+    print()
+    for name, i in sets.items():
+        print("%-14s= %3d" % (name, i))
