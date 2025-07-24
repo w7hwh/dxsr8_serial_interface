@@ -6,23 +6,23 @@ radio_snoopy.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250721 2055 hrs by hwh
+ last edit: 20250723 1647 hrs by hwh
 
 
  edit history:
 
 
 """
-VERSION="v0.4"
+VERSION="v0.5"
 
-SHOW_LINE          = True
-SHOW_COUNT         = True
+SHOW_LINE          = False
+SHOW_COUNT         = False
 USE_HEXBYTES       = True
 
 SHOW_RADIO_READY   = False
 SHOW_RADIO_LCSA    = False
-SHOW_RADIO_STATE   = False
-DECODE_RADIO_STATE = True
+SHOW_RADIO_STATE   = True
+DECODE_RADIO_STATE = False
 
 LCSA_LENGTH        = 34
 
@@ -77,7 +77,7 @@ def decode_state(sin):
 
 
 def print_state(sin):
-    #print(hexBytes2(sin))
+    print(hexBytes(sin))
    
     if not sin.startswith("LCSA"):
         return
@@ -98,7 +98,7 @@ def print_state(sin):
 
         line += " <BL%2d>" % backlightdisp.decode(sin) # if you care about the backlight intensity.
 
-        #print(line)
+        print(line)
         
     except (Exception) as e:
         print()
@@ -129,7 +129,9 @@ dxsr8.display.text("radio2head only", 0, display_line(3))
 dxsr8.display.text(VERSION, 0, display_line(7))
 dxsr8.display.show()
 
-curline = b""
+curline   = b""
+curbytes  = b""
+prevbytes = b""
 
 if SHOW_LINE:
     print_bit_header()
@@ -166,10 +168,14 @@ while True:
             curline = curline[n:]
         
         while len(curline) >= LCSA_LENGTH:
-            if SHOW_RADIO_STATE:
-                print_state(curline[0:LCSA_LENGTH])
-            if DECODE_RADIO_STATE:
-                decode_state(curline[0:LCSA_LENGTH])
-            dxsr8.radio_uart.write(curline[0:LCSA_LENGTH])
+            curbytes = curline[0:LCSA_LENGTH]
+            if curbytes != prevbytes:
+                prevbytes = curbytes
+                if SHOW_RADIO_STATE:
+                        print_state(curbytes)
+                elif DECODE_RADIO_STATE:
+                    decode_state(curbytes)
+            # we always pass it on even it it's the same
+            dxsr8.radio_uart.write(curbytes)
             curline = curline[LCSA_LENGTH:]
         

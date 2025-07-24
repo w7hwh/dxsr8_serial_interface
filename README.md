@@ -24,6 +24,7 @@ Back in 2013 AJ9BM did an analysis of the communication between the DX-SR8's cha
 
 - aj9bm_code/ -- The original python analysis code AJ9BM wrote back in 2013.
 - board/ -- Board design files
+- documentation/ -- Documenting the protocol between radio and head.
 - firmware/ -- My code to run in MicroPython on a Raspberry Pi Pico 2.
 - images/ -- Images
 

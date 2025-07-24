@@ -3,14 +3,16 @@ utility.py
 
  Various common routines
 
- last edit: 20250719 1110 hrs by hwh
+ last edit: 20250723 1431 hrs by hwh
 
  edit history:
 
 
  todo:
-
-
+    add clr_bit(bytes, offset)
+    add set_bit(bytes, offset, value)
+    add set_byte(bytes, offset, value)
+    
 """
 def get_bit(bytes, offset):
     i = int(offset)//8
@@ -21,16 +23,20 @@ def get_bit(bytes, offset):
     return 0
 
 def set_bit(bytes, offset):
-    i = int(offset)/8
+    i = int(offset)//8
     j = offset % 8
 
     bytes[i] |= (1<<j);
     return bytes
 
+# ---------------------
 
+# returns a string of hex values separated by spaces
 def hexBytes(b):
     return ''.join(['{:02x} '.format(i) for i in b])
     
+# returns a string of hex values separated by spaces
+# but with printable characters not in hex
 def hexBytes2(b):
     ret = ''
     for i in b:
