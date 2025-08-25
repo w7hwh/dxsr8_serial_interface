@@ -12,7 +12,7 @@ snoop.py
 """
 VERSION="v0.3"
 
-MONITOR     = 1        # 0=head, 1=radio, 2=both
+MONITOR     = 0        # 0=head, 1=radio, 2=both
 
 SHOW_LINE   = True
 

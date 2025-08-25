@@ -3,7 +3,7 @@ dxsr8.py
 
  This class stores the project pin settings, etc.
  
- last edit: 20250721 1809 hrs by hwh
+ last edit: 20250725 1023 hrs by hwh
 
  edit history:
 
@@ -20,7 +20,10 @@ class dxsr8():
     
     led=Pin("LED", Pin.OUT)
     
+    #baud_rate=76800
     baud_rate=38400
+    #baud_rate=19200
+    #baud_rate=9600
     bits=8
     parity=None
     stop=1
@@ -55,6 +58,7 @@ class dxsr8():
     radio_poll_obj.register(radio_uart,select.POLLIN)
 
     i2c = I2C(scl=display_scl_pin, sda=display_sda_pin, freq=400000)
+    
     # display is 128x64 giving 8 lines of 16 characters
     display = sh1106.SH1106_I2C(128, 64, i2c, None, 0x3c)
     display.sleep(False)

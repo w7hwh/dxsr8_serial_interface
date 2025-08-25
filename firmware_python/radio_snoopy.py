@@ -6,7 +6,7 @@ radio_snoopy.py
  original written by Josh, AJ9BM
  see https://github.com/jbm9/dxsr8_serial
 
- last edit: 20250723 1647 hrs by hwh
+ last edit: 20250725 1040 hrs by hwh
 
 
  edit history:
@@ -15,9 +15,10 @@ radio_snoopy.py
 """
 VERSION="v0.5"
 
-SHOW_LINE          = False
-SHOW_COUNT         = False
-USE_HEXBYTES       = True
+SHOW_COUNT         = True
+SHOW_LINE          = True
+USE_HEXBYTES       = False
+USE_HEXBYTES2      = True
 
 SHOW_RADIO_READY   = False
 SHOW_RADIO_LCSA    = False
@@ -28,7 +29,7 @@ LCSA_LENGTH        = 34
 
 import select
 import time
-from machine import Pin #, UART, I2C
+#from machine import Pin
 from dxsr8_screen import *
 from dxsr8 import *
 from utility import *
@@ -77,7 +78,7 @@ def decode_state(sin):
 
 
 def print_state(sin):
-    print(hexBytes(sin))
+    print("print_state: %s" % hexBytes2(sin))
    
     if not sin.startswith("LCSA"):
         return
@@ -109,17 +110,6 @@ def print_state(sin):
         print()
 
 
-def print_bit_header():
-    print('-'*((LCSA_LENGTH*3)-1))
-    for i in range(LCSA_LENGTH):
-        print("%2d" % ((i*8)//100), end = ' ')
-    print()
-    for i in range(LCSA_LENGTH):
-        print("%02d" % ((i*8)%100), end = ' ')
-    print()
-    print('-'*((LCSA_LENGTH*3)-1))
-
-
 print("Radio Snoopy", VERSION)
 print("radio2head only")
 
@@ -134,7 +124,7 @@ curbytes  = b""
 prevbytes = b""
 
 if SHOW_LINE:
-    print_bit_header()
+    print_bit_header(13, LCSA_LENGTH)
     
 while True:
     led.toggle()
@@ -143,13 +133,16 @@ while True:
         x = dxsr8.radio_uart.read()
         curline += x
         
+        if SHOW_COUNT:
+            print("---> read %d bytes" % len(x))
+        
         if SHOW_LINE:
-            if SHOW_COUNT:
-                print("---> read %d bytes" % len(x))
             if USE_HEXBYTES:
-                print(hexBytes(x))
+                print("curline    : %s" % hexBytes(x))
+            elif USE_HEXBYTES2:
+                print("curline    : %s" % hexBytes2(x))
             else:
-                print(x)
+                print("curline    : %s" % x)
 
         if -1 != curline.find(b"AL~READY"):
             if SHOW_RADIO_READY:
@@ -169,13 +162,17 @@ while True:
         
         while len(curline) >= LCSA_LENGTH:
             curbytes = curline[0:LCSA_LENGTH]
+            
+            # only decode/print if something has changed
             if curbytes != prevbytes:
                 prevbytes = curbytes
                 if SHOW_RADIO_STATE:
                         print_state(curbytes)
                 elif DECODE_RADIO_STATE:
                     decode_state(curbytes)
+            
             # we always pass it on even it it's the same
             dxsr8.radio_uart.write(curbytes)
+            
             curline = curline[LCSA_LENGTH:]
         

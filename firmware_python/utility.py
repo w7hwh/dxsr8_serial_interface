@@ -3,7 +3,7 @@ utility.py
 
  Various common routines
 
- last edit: 20250723 1431 hrs by hwh
+ last edit: 20250725 1050 hrs by hwh
 
  edit history:
 
@@ -37,11 +37,12 @@ def hexBytes(b):
     
 # returns a string of hex values separated by spaces
 # but with printable characters not in hex
+# to avoid confusion space is still printed as hex
 def hexBytes2(b):
     ret = ''
     for i in b:
-        if i > 31 and i < 127:
-            ret += chr(i) + ' '
+        if i > 32 and i < 127:
+            ret += chr(i) + '  '
         else:
             ret += '{:02x} '.format(i)
     return ret
@@ -59,3 +60,22 @@ def intWithCommas(x):
         result = ",%03d%s" % (r, result)
     return "%d%s" % (x, result)
 
+
+
+def print_bit_header(spaces, length):
+    
+    print(' '*spaces, end = '')
+    print('-'*((length*3)-1))
+    
+    print(' '*spaces, end = '')
+    for i in range(length):
+        print("%2d" % ((i*8)//100), end = ' ')
+    print()
+    
+    print(' '*spaces, end = '')
+    for i in range(length):
+        print("%02d" % ((i*8)%100), end = ' ')
+    print()
+
+    print(' '*spaces, end = '')
+    print('-'*((length*3)-1))
