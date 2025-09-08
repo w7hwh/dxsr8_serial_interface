@@ -6,7 +6,7 @@ Since I have a DX-SR8 and a few Raspberry Pi Picos sitting around I decided to t
 
 Back in 2013 AJ9BM did an analysis of the communication between the DX-SR8's chassis and its front panel. He found out a great deal about the protocol and built working prototypes but he eventually abandoned the project. More about his work is in [aj9bm.md](./aj9bm.md).
  
-The micropython didn't work so well for me so I've switched to programming in C to run under freeRTOS. This was picked because of the same reason many things are decided, I has experience with both C and freeRTOS. :^)
+The micropython didn't work so well for me so I've switched to programming in C to run under freeRTOS. This was picked because of the same reason many things are decided, I have experience with both C and freeRTOS. :^) Initially I'm using a "Blue Pill" board with a cpu labeled STM32F103CBT6 . The ST-INFO utility says it has 256k flash and 64k of ram instead of the lower amounts that chip is supposed to have. 
 
 ---
 
